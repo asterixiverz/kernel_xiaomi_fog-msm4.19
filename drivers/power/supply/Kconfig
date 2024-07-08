@@ -657,4 +657,6 @@ source "drivers/power/supply/maxim/Kconfig"
 
 source "drivers/power/supply/nopmi/Kconfig"
 
+source "drivers/power/supply/battery_secret/Kconfig"
+
 endif # POWER_SUPPLY

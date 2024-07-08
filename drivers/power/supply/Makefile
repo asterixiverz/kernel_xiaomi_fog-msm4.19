@@ -93,3 +93,4 @@ obj-$(CONFIG_NOPMI_CHARGER)	+= nopmi_chg_jeita.o
 obj-$(CONFIG_NOPMI_CHARGER)	+= nopmi_chg_common.o
 obj-$(CONFIG_NOPMI_CHARGER)	+= nopmi/
 obj-$(CONFIG_ARCH_QCOM)		+= qcom/
+obj-$(CONFIG_ARCH_QCOM)         += battery_secret/

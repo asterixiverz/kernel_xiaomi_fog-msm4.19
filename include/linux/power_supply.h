@@ -459,6 +459,9 @@ enum power_supply_type {
 	POWER_SUPPLY_TYPE_UFP,			/* Type-C UFP */
 	POWER_SUPPLY_TYPE_DFP,			/* Type-C DFP */
 	POWER_SUPPLY_TYPE_CHARGE_PUMP,		/* Charge Pump */
+#ifdef CONFIG_BATT_VERIFY_BY_DS28E16
+	POWER_SUPPLY_TYPE_BATT_VERIFY,		/* battery verify */
+#endif
 };
 
 enum power_supply_usb_type {
