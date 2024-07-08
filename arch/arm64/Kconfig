@@ -202,6 +202,12 @@ config ARCH_MMAP_RND_BITS_MIN
        default 16 if ARM64_16K_PAGES
        default 18
 
+config TARGET_PROJECT_K7T
+        default n
+        bool "Custom project for hardware K7T pcb (Redmi Note 11)"
+        help
+        Custom project for K7T pcb.
+
 # max bits determined by the following formula:
 #  VA_BITS - PAGE_SHIFT - 3
 config ARCH_MMAP_RND_BITS_MAX
