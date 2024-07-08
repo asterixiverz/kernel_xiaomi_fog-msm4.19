@@ -65,6 +65,8 @@ int qpnp_pon_set_restart_reason(enum pon_restart_reason reason);
 bool qpnp_pon_check_hard_reset_stored(void);
 int qpnp_pon_modem_pwr_off(enum pon_power_off_type type);
 
+int qpnp_pon_is_lpk(void);
+int qpnp_pon_is_ps_hold_reset(void);
 #else
 
 static int qpnp_pon_system_pwr_off(enum pon_power_off_type type)
