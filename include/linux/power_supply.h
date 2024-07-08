@@ -404,7 +404,6 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_CC_TOGGLE_ENABLE,
 	POWER_SUPPLY_PROP_FG_TYPE,
 	POWER_SUPPLY_PROP_CHARGER_STATUS,
-#ifdef CONFIG_BATT_VERIFY_BY_DS28E16
 	/* battery verify properties */
 	POWER_SUPPLY_PROP_ROMID,
 	POWER_SUPPLY_PROP_DS_STATUS,
@@ -419,7 +418,6 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_PAGE0_DATA,
 	POWER_SUPPLY_PROP_PAGE1_DATA,
 	POWER_SUPPLY_PROP_VERIFY_MODEL_NAME,
-#endif
 	POWER_SUPPLY_PROP_QUICK_CHARGE_TYPE,
 	POWER_SUPPLY_PROP_TERM_CURRENT,
 	/* Local extensions of type int64_t */
@@ -525,6 +523,7 @@ union power_supply_propval {
 	int intval;
 	const char *strval;
 	int64_t int64val;
+	unsigned char arrayval[50];
 };
 
 struct device_node;

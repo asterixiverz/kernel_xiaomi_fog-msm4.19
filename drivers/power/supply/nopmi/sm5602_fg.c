@@ -1168,48 +1168,6 @@ static int fg_get_batt_health(struct sm_fg_chip *sm)
 		return POWER_SUPPLY_HEALTH_GOOD;
 }
 
-static int get_battery_id(void)
-{
-	struct power_supply *max_verify_psy;
-	static int battery_id = 0;
-	union power_supply_propval pval = {0, };
-	int rc;
-
-	max_verify_psy = power_supply_get_by_name("batt_verify");
-	if (max_verify_psy != NULL) {
-		rc = power_supply_get_property(max_verify_psy,
-				POWER_SUPPLY_PROP_CHIP_OK, &pval);
-		if (rc < 0)
-			pr_err("fgauge_get_profile_id: get romid error.\n");
-	}
-
-	if (pval.intval == true) {
-		rc = power_supply_get_property(max_verify_psy,
-				POWER_SUPPLY_PROP_PAGE0_DATA, &pval);
-		if (rc < 0) {
-			pr_err("fgauge_get_profile_id: get page0 error.\n");
-		} else {
-			if (pval.arrayval[0] == 'N') {
-				battery_id = BATTERY_VENDOR_NVT;
-			} else if (pval.arrayval[0] == 'C') {
-				battery_id = BATTERY_VENDOR_GY;
-			} else if (pval.arrayval[0] == 'V') {
-				battery_id = BATTERY_VENDOR_GY;
-			} else if (pval.arrayval[0] == 'L') {
-				battery_id = BATTERY_VENDOR_XWD;
-			} else if (pval.arrayval[0] == 'S') {
-				battery_id = BATTERY_VENDOR_XWD;
-			} else if (pval.arrayval[0] == 'X') {
-				battery_id = BATTERY_VENDOR_XWD;
-			}
-		}
-	}
-
-	pr_info("fgauge_get_profile_id: get_battery_id=%d.\n", battery_id);
-
-	return battery_id;
-}
-
 static enum power_supply_property fg_props[] = {
 #ifdef CONFIG_BATT_VERIFY_BY_DS28E16
 	POWER_SUPPLY_PROP_AUTHENTIC,
@@ -1422,7 +1380,6 @@ static int fg_get_property(struct power_supply *psy, enum power_supply_property 
 		mutex_unlock(&sm->data_lock);
 		break;
 	case POWER_SUPPLY_PROP_RESISTANCE_ID:
-		val->intval = get_battery_id();
 		break;
 	case POWER_SUPPLY_PROP_CHARGE_FULL:
 		ret = fg_read_fcc(sm);
@@ -1452,20 +1409,6 @@ static int fg_get_property(struct power_supply *psy, enum power_supply_property 
 		val->intval = sm->fast_mode;
 		break;
 	case POWER_SUPPLY_PROP_BATTERY_TYPE:
-		switch (get_battery_id()) {
-			case BATTERY_VENDOR_NVT:
-				val->strval = "M376-NVT-5000mAh";
-				break;
-			case BATTERY_VENDOR_GY:
-				val->strval = "M376-GuanYu-5000mAh";
-				break;
-			case BATTERY_VENDOR_XWD:
-				val->strval = "M376-Sunwoda-5000mAh";
-				break;
-			default:
-				val->strval = "M376-unknown-5000mAh";
-				break;
-		}
 		break;
 	case POWER_SUPPLY_PROP_RESISTANCE:
 		val->intval = 0;
@@ -3134,8 +3077,6 @@ static int fg_battery_parse_dt(struct sm_fg_chip *sm)
 	/* battery_id*/
 	if (of_property_read_u32(np, "battery,id", &battery_id) < 0)
 		pr_err("not battery,id property\n");
-	if (battery_id == -1)
-		battery_id = get_battery_id();
 	pr_info("battery id = %d\n", battery_id);
 
 	/*  battery_table*/
