@@ -1,0 +1,30 @@
+. ${ROOT_DIR}/${KERNEL_DIR}/build.config.common
+BUILD_INITRAMFS=0
+EXT_MODULES="
+# private/msm-google-modules/wlan/qcacld-3.0 Ignore for now
+"
+
+if [ -n "${BUILD_BOOT_IMG}" ]; then
+    LZ4_RAMDISK=1
+    PAGE_SIZE=4096
+    TAGS_OFFSET=0x100
+    KERNEL_BINARY=Image
+    BASE_ADDRESS=0x00000000
+    RAMDISK_OFFSET=0x1000000
+    BOOT_IMAGE_HEADER_VERSION=3
+    MKBOOTIMG_PATH=tools/mkbootimg/mkbootimg.py
+    # Set OS Version and OS Patch Level here (IMPORTANT!)
+    MKBOOTIMG_EXTRA_ARGS="--os_version 14 --os_patch_level "2024-06""
+
+    # Kernel Commandline
+    KERNEL_VENDOR_CMDLINE="androidboot.console=ttyMSM0 androidboot.fstab_suffix=qcom androidboot.hardware=qcom androidboot.memcg=1 androidboot.usbcontroller=4e00000.dwc3 loop.max_part=7 lpm_levels.sleep_disabled=1 msm_rtb.filter=0x237 service_locator.enable=1 swiotlb=2048 kpti=off build=user"
+
+    # Ramdisk Prebuilts
+    GKI_RAMDISK_PREBUILT_BINARY=${ROOT_DIR}/prebuilts/boot-artifacts/ramdisks/ramdisk-hentai-ab_arm64.img
+
+    # Enable chained vbmeta for boot images
+    AVB_SIGN_BOOT_IMG=1
+    AVB_BOOT_PARTITION_SIZE=0x8000000
+    AVB_BOOT_KEY=${ROOT_DIR}/prebuilts/kernel-build-tools/linux-x86/share/avb/testkey_rsa2048.pem
+    AVB_BOOT_ALGORITHM=SHA256_RSA2048
+fi

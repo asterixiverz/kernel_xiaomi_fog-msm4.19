@@ -1,0 +1,5 @@
+BRANCH=android-msm-sm6225-4.19
+KERNEL_DIR=private/msm-google
+DEFCONFIG=vendor/spes-perf_defconfig
+. ${ROOT_DIR}/${KERNEL_DIR}/build.config.sm6225.clang
+POST_DEFCONFIG_CMDS="check_defconfig"
