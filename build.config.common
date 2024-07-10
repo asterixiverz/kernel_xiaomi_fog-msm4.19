@@ -9,7 +9,7 @@ BUILDTOOLS_PREBUILT_BIN=build/build-tools/path/linux-x86
 
 EXTRA_CMDS=''
 FILES="
-arch/arm64/boot/dts/vendor/qcom/khaje.dtb
+arch/arm64/boot/dts/vendor/qcom/*.dtb
 arch/arm64/boot/dtbo.img
 arch/arm64/boot/Image
 vmlinux

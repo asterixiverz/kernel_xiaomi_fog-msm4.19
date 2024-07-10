@@ -1,7 +1,7 @@
 . ${ROOT_DIR}/${KERNEL_DIR}/build.config.common
 BUILD_INITRAMFS=0
 EXT_MODULES="
-# private/msm-google-modules/wlan/qcacld-3.0 Ignore for now
+private/msm-google-modules/wlan/qcacld-3.0
 "
 
 if [ -n "${BUILD_BOOT_IMG}" ]; then
@@ -10,7 +10,7 @@ if [ -n "${BUILD_BOOT_IMG}" ]; then
     TAGS_OFFSET=0x100
     KERNEL_BINARY=Image
     BASE_ADDRESS=0x00000000
-    RAMDISK_OFFSET=0x1000000
+    RAMDISK_OFFSET=0x01000000
     BOOT_IMAGE_HEADER_VERSION=3
     MKBOOTIMG_PATH=tools/mkbootimg/mkbootimg.py
     # Set OS Version and OS Patch Level here (IMPORTANT!)
@@ -20,7 +20,8 @@ if [ -n "${BUILD_BOOT_IMG}" ]; then
     KERNEL_VENDOR_CMDLINE="androidboot.console=ttyMSM0 androidboot.fstab_suffix=qcom androidboot.hardware=qcom androidboot.memcg=1 androidboot.usbcontroller=4e00000.dwc3 loop.max_part=7 lpm_levels.sleep_disabled=1 msm_rtb.filter=0x237 service_locator.enable=1 swiotlb=2048 kpti=off build=user"
 
     # Ramdisk Prebuilts
-    GKI_RAMDISK_PREBUILT_BINARY=${ROOT_DIR}/prebuilts/boot-artifacts/ramdisks/ramdisk-hentai-ab_arm64.img
+    GKI_RAMDISK_PREBUILT_BINARY=${ROOT_DIR}/prebuilts/boot-artifacts/ramdisks/ramdisk-aosp_arm64.img
+    VENDOR_RAMDISK_BINARY=${ROOT_DIR}/prebuilts/boot-artifacts/ramdisks/ramdisk-hentai-ab_arm64.img
 
     # Enable chained vbmeta for boot images
     AVB_SIGN_BOOT_IMG=1
