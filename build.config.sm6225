@@ -1,4 +1,4 @@
-. ${ROOT_DIR}/${KERNEL_DIR}/build.config.common
+. ${ROOT_DIR}/${KERNEL_DIR}/build.config.common.performance
 BUILD_INITRAMFS=0
 EXT_MODULES="
 private/msm-google-modules/wlan/qcacld-3.0
