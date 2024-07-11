@@ -70,6 +70,13 @@
 
 #define BMS_FG_VERIFY		"BMS_FG_VERIFY"
 #define BMS_FC_VOTER		"BMS_FC_VOTER"
+#define ENABLE_MAP_SOC
+
+#ifdef ENABLE_MAP_SOC
+#define MAP_MAX_SOC		97
+#define MAP_RATE_SOC	975
+#define MAP_MIN_SOC		4
+#endif
 
 enum sm_fg_reg_idx {
 	SM_FG_REG_DEVICE_ID = 0,
@@ -1348,18 +1355,12 @@ static int fg_get_property(struct power_supply *psy, enum power_supply_property 
 		mutex_lock(&sm->data_lock);
 		if (ret >= 0)
 			sm->batt_soc = ret;
-		if (sm->param.batt_soc >= 0)
-			val->intval = sm->param.batt_soc/10;
-		else if ((ret >= 0) && (sm->param.batt_soc == -EINVAL))
-			val->intval = (sm->batt_soc > 16) ? ((sm->batt_soc*10 + 96)/97) : (sm->batt_soc/10) ;
-		else
-			val->intval = 50;
 
-		/* capacity should be between 0% and 100% */
-		if (val->intval > 100)
-			val->intval = 100;
-		if (val->intval < 0)
-			val->intval = 0;
+#ifdef ENABLE_MAP_SOC
+		val->intval = (((100*(sm->batt_soc*10+MAP_MAX_SOC))/MAP_RATE_SOC)-MAP_MIN_SOC)/10;
+#else
+		val->intval = sm->batt_soc/10;
+#endif
 
 		mutex_unlock(&sm->data_lock);
 		if (sm->shutdown_delay_enable) {
@@ -1534,7 +1535,6 @@ static int fg_prop_is_writeable(struct power_supply *psy,
 
 	switch (prop) {
 	case POWER_SUPPLY_PROP_TEMP:
-	case POWER_SUPPLY_PROP_CAPACITY:
 	case POWER_SUPPLY_PROP_FASTCHARGE_MODE:
 	case POWER_SUPPLY_PROP_CHIP_OK:
 		ret = 1;
