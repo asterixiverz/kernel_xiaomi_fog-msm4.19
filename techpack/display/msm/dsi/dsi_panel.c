@@ -1896,11 +1896,11 @@ const char *cmd_set_prop_map[DSI_CMD_SET_MAX] = {
 	"qcom,mdss-dsi-post-mode-switch-on-command",
 	"qcom,mdss-dsi-qsync-on-commands",
 	"qcom,mdss-dsi-qsync-off-commands",
+	"qcom,mdss-dsi-dispparam-hbm-on-command",
+	"qcom,mdss-dsi-dispparam-hbm-off-command",
 #ifdef CONFIG_TARGET_PROJECT_K7T
 	"qcom,mdss-dsi-doze-hbm-command",
 	"qcom,mdss-dsi-doze-lbm-command",
-	"qcom,mdss-dsi-dispparam-hbm-on-command",
-	"qcom,mdss-dsi-dispparam-hbm-off-command",
 	"qcom,mdss-dsi-hbm1-on-command",
 	"qcom,mdss-dsi-hbm2-on-command",
 	"qcom,mdss-dsi-dispparam-bc-90hz-command",
@@ -1932,11 +1932,11 @@ const char *cmd_set_state_map[DSI_CMD_SET_MAX] = {
 	"qcom,mdss-dsi-post-mode-switch-on-command-state",
 	"qcom,mdss-dsi-qsync-on-commands-state",
 	"qcom,mdss-dsi-qsync-off-commands-state",
+	"qcom,mdss-dsi-dispparam-hbm-on-command-state",
+	"qcom,mdss-dsi-dispparam-hbm-off-command-state",
 #ifdef CONFIG_TARGET_PROJECT_K7T
 	"qcom,mdss-dsi-doze-hbm-command-state",
 	"qcom,mdss-dsi-doze-lbm-command-state",
-	"qcom,mdss-dsi-dispparam-hbm-on-command-state",
-	"qcom,mdss-dsi-dispparam-hbm-off-command-state",
 	"qcom,mdss-dsi-hbm1-on-command-state",
 	"qcom,mdss-dsi-hbm2-on-command-state",
 	"qcom,mdss-dsi-dispparam-bc-90hz-command-state",
@@ -4604,6 +4604,8 @@ int dsi_panel_enable(struct dsi_panel *panel)
 	else
 		panel->panel_initialized = true;
 	DSI_INFO("[%s]: dsi panel send DSI_CMD_SET_ON\n", __func__);
+
+#ifdef CONFIG_TARGET_PROJECT_K7T	
 	if (panel->cur_mode->timing.refresh_rate == 90) {
 		rc = dsi_panel_tx_cmd_set(panel, DSI_CMD_SET_DISP_BC_90HZ);
 		if (rc)
@@ -4614,6 +4616,8 @@ int dsi_panel_enable(struct dsi_panel *panel)
 			DSI_INFO("%s: refresh_rate = %d\n", __func__, panel->cur_mode->timing.refresh_rate);
 		}
 	}
+#endif
+
 	mutex_unlock(&panel->panel_lock);
 	return rc;
 }
@@ -4753,7 +4757,11 @@ int dsi_panel_post_unprepare(struct dsi_panel *panel)
 	}
 
 	notifier_data.data = &power_status;
+
+#ifdef CONFIG_TARGET_PROJECT_K7T	
 	notifier_data.refresh_rate = 90;
+#endif
+
 	notifier_data.id = 1;
 	DSI_INFO("[%s]: dsi panel power off\n", __func__);
 	drm_panel_notifier_call_chain(&panel->drm_panel, DRM_PANEL_EARLY_EVENT_BLANK, &notifier_data);
@@ -4775,6 +4783,8 @@ void dsi_set_backlight_control(struct dsi_panel *panel,
 	}
 
 	mutex_lock(&panel->panel_lock);
+
+#ifdef CONFIG_TARGET_PROJECT_K7T	
 	if (adj_mode->timing.refresh_rate == 90) {
 		rc = dsi_panel_tx_cmd_set(panel, DSI_CMD_SET_DISP_BC_90HZ);
 		if (rc)
@@ -4794,6 +4804,8 @@ void dsi_set_backlight_control(struct dsi_panel *panel,
 			DSI_INFO("%s: refresh_rate = %d\n", __func__, adj_mode->timing.refresh_rate);
 		}
 	}
+#endif
+
 	mutex_unlock(&panel->panel_lock);
 
 	return;
