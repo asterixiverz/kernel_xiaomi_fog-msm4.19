@@ -345,8 +345,8 @@ khajeg-idps-display-90hz-overlay.dtbo-base := khajeg.dtb
 spes-khaje-idp-nopmi-overlay.dtbo-base := khaje.dtb
 spesn-khaje-idp-nopmi-overlay.dtbo-base := khaje.dtb
 spes-sm5602-khaje-idp-nopmi-overlay.dtbo-base := khaje.dtb
-else
-dtb-$(CONFIG_ARCH_KHAJE) += khaje-idp.dtb \
+# else
+# dtb-$(CONFIG_ARCH_KHAJE) += khaje-idp.dtb \
 		khaje-qrd.dtb \
 		khaje-qrd-hvdcp3p5.dtb \
 		khaje-qrd-nowcd9375.dtb \
