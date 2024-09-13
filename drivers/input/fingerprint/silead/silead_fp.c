@@ -628,83 +628,6 @@ static void silfp_work_func(struct work_struct *work)
 }
 
 /* -------------------------------------------------------------------- */
-/*                          key event functions                         */
-/* -------------------------------------------------------------------- */
-static int silfp_keyevent(struct silfp_data	*fp_dev, struct fp_dev_key_t *pkey)
-{
-    int ret = -EFAULT;
-    int i;
-
-    //LOG_MSG_DEBUG(INFO_LOG, "[%s] key %d, flag %d\n", __func__,pkey->value,pkey->flag);
-    if (!fp_dev->input) {
-        LOG_MSG_DEBUG(INFO_LOG, "[%s] invalid input device\n",__func__);
-        return -1;
-    }
-    if (IS_KEY_VALID(pkey->value)) {
-        /* Translate Click Down/Up key to Click key. */
-        switch( pkey->value ) {
-        case NAV_KEY_CLICK_DOWN:
-            pkey->value = NAV_KEY_CLICK;
-            pkey->flag = NAV_KEY_FLAG_DOWN;
-            break;
-        case NAV_KEY_CLICK_UP:
-            pkey->value = NAV_KEY_CLICK;
-            pkey->flag = NAV_KEY_FLAG_UP;
-            break;
-        default:
-            break;
-        }
-
-        /* Check the custom define keymap */
-        if (fp_dev->keymap_cust.k[pkey->value - NAV_KEY_START]) {
-            LOG_MSG_DEBUG(INFO_LOG, "[%s] custom-key %d\n", __func__,fp_dev->keymap_cust.k[pkey->value - NAV_KEY_START]);
-            if (KEY_RESERVED != fp_dev->keymap_cust.k[pkey->value - NAV_KEY_START]) {
-                if (NAV_KEY_FLAG_CLICK == pkey->flag) {
-                    input_report_key(fp_dev->input, fp_dev->keymap_cust.k[pkey->value - NAV_KEY_START], NAV_KEY_FLAG_DOWN);
-                    input_sync(fp_dev->input);
-                    input_report_key(fp_dev->input, fp_dev->keymap_cust.k[pkey->value - NAV_KEY_START], NAV_KEY_FLAG_UP);
-                    input_sync(fp_dev->input);
-                } else {
-                    input_report_key(fp_dev->input, fp_dev->keymap_cust.k[pkey->value - NAV_KEY_START], pkey->flag);
-                    input_sync(fp_dev->input);
-                }
-            } else {
-                // Here means this key is not set, simply ignore it.
-            }
-            ret = 0;
-        }
-    }
-
-    for (i = 0; ret && i < ARRAY_SIZE(keymap); i++) {
-        if (keymap[i].key_orig == pkey->value) {
-            LOG_MSG_DEBUG(INFO_LOG, "[%s] key %d\n", __func__,keymap[i].key_new);
-            if (KEY_RESERVED != keymap[i].key_new) {
-                if (NAV_KEY_FLAG_CLICK == pkey->flag) {
-                    input_report_key(fp_dev->input, keymap[i].key_new, NAV_KEY_FLAG_DOWN);
-                    input_sync(fp_dev->input);
-                    input_report_key(fp_dev->input, keymap[i].key_new, NAV_KEY_FLAG_UP);
-                    input_sync(fp_dev->input);
-                } else {
-                    input_report_key(fp_dev->input, keymap[i].key_new, pkey->flag);
-                    input_sync(fp_dev->input);
-                }
-            } else {
-                // Here means this key is not set, simply ignore it.
-            }
-            ret = 0;
-        }
-    }
-
-    if (ret) {
-        LOG_MSG_DEBUG(INFO_LOG, "[%s] unregister custom-key %d\n", __func__,pkey->value);
-        input_report_key(fp_dev->input, pkey->value, pkey->flag);
-        input_sync(fp_dev->input);
-        ret = 0;
-    }
-    return ret;
-}
-
-/* -------------------------------------------------------------------- */
 /*                          proc node functions                         */
 /* -------------------------------------------------------------------- */
 #ifdef PROC_NODE
@@ -849,15 +772,6 @@ static int silfp_input_init(struct silfp_data *fp_dev)
         status = -ENOMEM;
         return status;
     }
-
-    __set_bit(EV_KEY, fp_dev->input->evbit);
-    //__set_bit(KEY_Q, fp_dev->input->keybit); // it will cause Android think this is a physical keyboard.
-    __set_bit(KEY_HOME, fp_dev->input->keybit);
-    __set_bit(KEY_HOMEPAGE, fp_dev->input->keybit);
-
-    __set_bit(KEY_MENU, fp_dev->input->keybit);
-    __set_bit(KEY_BACK, fp_dev->input->keybit);
-    __set_bit(KEY_CAMERA, fp_dev->input->keybit);
 
     for (i = 0; i < ARRAY_SIZE(keymap); i++) {
         if (keymap[i].key_new != KEY_RESERVED) {
@@ -1110,8 +1024,6 @@ silfp_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
         if (copy_from_user(&key, (struct fp_dev_key_t *)arg, sizeof(struct fp_dev_key_t))) {
             LOG_MSG_DEBUG(ERR_LOG, "[%s] copy key fail?\n",__func__);
             retval = -EFAULT;
-        } else {
-            retval = silfp_keyevent(fp_dev,&key);
         }
         break;
 
