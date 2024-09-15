@@ -87,6 +87,7 @@ static u32 sh366101_regs[NUM_REGS] = {
     0x0E,		       /* BAT_FCC */
     CMDMASK_ALTMAC_W | 0x41,   /* RESET */
     0x1A,		       /* SOC_CYCLE */
+	0x3C,		       /* SH_FG_REG_DESIGN_CAPCITY. 20211116, Ethan */
 };
 
 enum sh_fg_device {
@@ -963,7 +964,8 @@ static s32 fg_get_batt_capacity_level(struct sh_fg_chip* sm)
 	else if (sm->batt_tc) /* [tc] always set when [fc] set */
 		return POWER_SUPPLY_CAPACITY_LEVEL_HIGH;
 	else if (sm->batt_socp) /* [soc1] always set when [socp] set */
-		return POWER_SUPPLY_CAPACITY_LEVEL_CRITICAL;
+		return POWER_SUPPLY_CAPACITY_LEVEL_LOW;
+		//return POWER_SUPPLY_CAPACITY_LEVEL_CRITICAL;
 	else if (sm->batt_soc1)
 		return POWER_SUPPLY_CAPACITY_LEVEL_LOW;
 	else
