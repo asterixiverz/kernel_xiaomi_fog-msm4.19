@@ -44,12 +44,6 @@
 #include <linux/platform_data/spi-mt65xx.h>
 #endif
 
-// include longcheer header
-#include "../lct_tp_info.h"
-#include "../lct_tp_selftest.h"
-#include "../lct_tp_work.h"
-#include "../lct_tp_grip_area.h"
-#include "../lct_tp_gesture.h"
 #define NVT_DEBUG 1
 
 //---GPIO number---
@@ -108,7 +102,6 @@ extern const uint16_t touch_key_array[TOUCH_KEY_NUM];
 //---Customerized func.---
 #define NVT_TOUCH_PROC 1
 #define NVT_TOUCH_EXT_PROC 1
-#define NVT_TOUCH_MP 0
 #define MT_PROTOCOL_B 1
 #define WAKEUP_GESTURE 1
 #if WAKEUP_GESTURE
@@ -127,12 +120,6 @@ extern const uint16_t gesture_key_array[];
 #define NVT_TOUCH_WDT_RECOVERY 1
 
 #define CHECK_PEN_DATA_CHECKSUM 0
-
-//enable tp work feature
-#define LCT_TP_WORK_EN      1
-
-//enable tp grip area feature
-#define LCT_TP_GRIP_AREA_EN 1
 
 /*2019.12.06 longcheer taocheng add for charger mode begin*/
 /*functions description*/
