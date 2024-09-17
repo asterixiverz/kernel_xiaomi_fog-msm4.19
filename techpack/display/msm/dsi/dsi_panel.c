@@ -548,7 +548,6 @@ exit:
 }
 
 #ifdef CONFIG_TARGET_PROJECT_C3Q
-extern bool get_lct_tp_gesture_status(void);
 static bool lcd_reset_keep_high = false;
 void set_lcd_reset_gpio_keep_high(bool en)
 {
@@ -562,11 +561,7 @@ static int dsi_panel_power_off(struct dsi_panel *panel)
 	int rc = 0;
 
 #ifdef CONFIG_TARGET_PROJECT_C3Q
-	//usleep_range(11000, 11010);	
-	if (get_lct_tp_gesture_status()) 
-  			gesture_flag = true;
-	else gesture_flag = false;
-
+  	gesture_flag = true;
 #endif	
 
 	usleep_range(11000, 11010);

@@ -5412,63 +5412,6 @@ static int dsi_display_write_reg_page(struct dsi_display_ctrl *ctrl, char cmd0,
 
 	return rc;
 }
-
-int lct_tp_lockdown_info_callback(void)
-{
-	bool is_already_read = false;
-	ssize_t rc = 0;
-	char *buf = NULL;
-	struct dsi_display *display;
-	struct dsi_display_ctrl *ctrl = NULL;
-
-	if (is_already_read)
-		return 0;
-
-	if (!display) {
-		DSI_ERR("Invalid display\n");
-		return -EINVAL;
-	}
-
-	if (display->tx_cmd_buf == NULL) {
-		rc = dsi_host_alloc_cmd_tx_buffer(display);
-		if (rc) {
-			DSI_ERR("failed to allocate cmd tx buffer memory\n");
-			goto done;
-		}
-	}
-
-	rc = dsi_display_cmd_engine_enable(display);
-	if (rc) {
-		DSI_ERR("cmd engine enable failed\n");
-		return -EPERM;
-	}
-
-	buf = kzalloc(PAGE_SIZE, GFP_KERNEL);
-	if (IS_ERR_OR_NULL(buf)) {
-		DSI_ERR("%s: kzalloc() request memory failed!\n", __func__);
-		return -ENOMEM;
-	}
-
-	ctrl = &display->ctrl[display->cmd_master_idx];
-	rc = dsi_display_write_reg_page(ctrl, 0xFF, 0x21, buf, sizeof(buf));
-	rc = dsi_display_read_reg(ctrl, 0xF1, 0x00, buf, sizeof(buf));
-	if (rc < 0) {
-		DSI_ERR("get lockdown failed rc=%d\n", rc);
-		goto exit;
-	}
-
-	rc = snprintf(buf, PAGE_SIZE, "%02X%02X%02X%02X%02X%02X%02X%02X\n",
-			buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
-
-	update_lct_tp_info(NULL, buf);
-	is_already_read = true;
-
-exit:
-	kfree(buf);
-	dsi_display_cmd_engine_disable(display);
-done:
-	return rc;
-}
 #endif
 
 /**
@@ -5684,9 +5627,6 @@ static int dsi_display_bind(struct device *dev,
 
 	/* register te irq handler */
 	dsi_display_register_te_irq(display);
-#ifdef CONFIG_TARGET_PROJECT_C3Q
-	set_lct_tp_lockdown_info_callback(lct_tp_lockdown_info_callback);
-#endif	
 
 	goto error;
 
