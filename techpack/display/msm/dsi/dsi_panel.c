@@ -504,11 +504,13 @@ static int dsi_panel_power_on(struct dsi_panel *panel)
 		goto exit;
 	}
 
+/*
 	rc = dsi_panel_set_pinctrl_state(panel, true);
 	if (rc) {
 		DSI_ERR("[%s] failed to set pinctrl, rc=%d\n", panel->name, rc);
 		goto error_disable_vregs;
 	}
+*/
 
 	rc = dsi_panel_reset(panel);
 #ifdef CONFIG_TARGET_PROJECT_K7T	
@@ -558,28 +560,24 @@ EXPORT_SYMBOL(set_lcd_reset_gpio_keep_high);
 
 static int dsi_panel_power_off(struct dsi_panel *panel)
 {
-	int rc = 0;
-
-#ifdef CONFIG_TARGET_PROJECT_C3Q
-  	gesture_flag = true;
-#endif	
+	int rc = 0;	
 
 	usleep_range(11000, 11010);
 
-	if (gpio_is_valid(panel->reset_config.disp_en_gpio))
-		gpio_set_value(panel->reset_config.disp_en_gpio, 0);
+	// if (gpio_is_valid(panel->reset_config.disp_en_gpio))
+		// gpio_set_value(panel->reset_config.disp_en_gpio, 0);
 
 	if (gpio_is_valid(panel->reset_config.reset_gpio) &&
 					!panel->reset_gpio_always_on) {
 		#ifdef CONFIG_TARGET_PROJECT_C3Q
-		if (lcd_reset_keep_high)
+		if (lcd_reset_keep_high == true)
 			DSI_WARN("%s: lcd-reset-gpio keep high\n", __func__);
 		else {
 			gpio_set_value(panel->reset_config.reset_gpio, 0);
 			DSI_ERR("%s: lcd-reset_gpio = 0\n", __func__);
 		}
 		#else
-		gpio_set_value(panel->reset_config.reset_gpio, 0);
+		gpio_set_value(panel->reset_config.reset_gpio, 1);
 		#endif
 	}
 
@@ -613,7 +611,7 @@ static int dsi_panel_power_off(struct dsi_panel *panel)
 	}
 
 	//for dt2w nvt but not for fts variant
-	if(fts_ts_variant){
+	if(fts_ts_variant == true){
 		rc = dsi_panel_set_pinctrl_state(panel, false);
 		if (rc) {
 			DSI_ERR("[%s] failed set pinctrl state, rc=%d\n", panel->name,
@@ -621,7 +619,10 @@ static int dsi_panel_power_off(struct dsi_panel *panel)
 		}
 	}
 
-	rc = dsi_pwr_enable_regulator(&panel->power_info, false);
+	if(lcd_reset_keep_high == false)
+		rc = dsi_pwr_enable_regulator(&panel->power_info, true);
+	else
+		rc = dsi_pwr_enable_regulator(&panel->power_info, false);
 	if (rc)
 		DSI_ERR("[%s] failed to enable vregs, rc=%d\n",
 				panel->name, rc);
