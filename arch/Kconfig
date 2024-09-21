@@ -572,20 +572,6 @@ config ARCH_SUPPORTS_SHADOW_CALL_STACK
 #config SHADOW_CALL_STACK
 	bool "Clang Shadow Call Stack"
 	depends on ARCH_SUPPORTS_SHADOW_CALL_STACK
-	help
-	  This option enables Clang's Shadow Call Stack, which uses a
-	  shadow stack to protect function return addresses from being
-	  overwritten by an attacker. More information can be found from
-	  Clang's documentation:
-#
-	    https://clang.llvm.org/docs/ShadowCallStack.html
-#
-	  Note that security guarantees in the kernel differ from the ones
-	  documented for user space. The kernel must store addresses of shadow
-	  stacks used by other tasks and interrupt handlers in memory, which
-	  means an attacker capable reading and writing arbitrary memory may
-	  be able to locate them and hijack control flow by modifying shadow
-	  stacks that are not currently in use.
 
 config SHADOW_CALL_STACK_VMAP
 	bool "Use virtually mapped shadow call stacks"
