@@ -191,21 +191,7 @@ qdf_export_symbol(qdf_wake_up_process);
 	LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0) || \
 	defined(BACKPORTED_EXPORT_SAVE_STACK_TRACE_TSK_ARM)
 #define QDF_PRINT_TRACE_COUNT 32
-void qdf_print_thread_trace(qdf_thread_t *thread)
-{
-	const int spaces = 4;
-	struct task_struct *task = thread;
-	unsigned long entries[QDF_PRINT_TRACE_COUNT] = {0};
-	struct stack_trace trace = {
-		.nr_entries = 0,
-		.skip = 0,
-		.entries = &entries[0],
-		.max_entries = QDF_PRINT_TRACE_COUNT,
-	};
 
-	save_stack_trace_tsk(task, &trace);
-	print_stack_trace(&trace, spaces);
-}
 #else
 void qdf_print_thread_trace(qdf_thread_t *thread) { }
 #endif /* KERNEL_VERSION(4, 14, 0) */
