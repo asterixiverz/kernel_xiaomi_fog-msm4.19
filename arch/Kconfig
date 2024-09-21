@@ -570,8 +570,8 @@ config ARCH_SUPPORTS_SHADOW_CALL_STACK
 	  stack switching.
 
 #config SHADOW_CALL_STACK
-	bool "Clang Shadow Call Stack"
-	depends on ARCH_SUPPORTS_SHADOW_CALL_STACK
+#	bool "Clang Shadow Call Stack"
+#	depends on ARCH_SUPPORTS_SHADOW_CALL_STACK
 
 config SHADOW_CALL_STACK_VMAP
 	bool "Use virtually mapped shadow call stacks"
